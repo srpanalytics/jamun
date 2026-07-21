@@ -204,7 +204,7 @@ def seed_data(db):
             (
                 p["creator_id"], p["title"], p["description"], p["category"],
                 p["target_model"], p["price"], p["content"],
-                (p["content"][:160] + "…") if len(p["content"]) > 160 else p["content"],
+                (p["content"][:160] + "…") if len(p["content"]) > 160 else p["content"], # type: ignore
                 0,
             ),
         )

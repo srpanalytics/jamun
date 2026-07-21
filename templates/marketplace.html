@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Marketplace — jamun{% endblock %}
+{% block content %}
+
+<div class="container page-title-block">
+  <h1>Marketplace</h1>
+  <p>Search, compare, and buy benchmark-scored prompts from verified creators.</p>
+</div>
+
+<div class="container section" style="padding-top:20px;">
+  <div class="filters">
+    <input type="text" id="search-input" placeholder="Search prompts (e.g. blog post, code review, lesson plan)">
+    <select id="category-filter">
+      <option value="">All categories</option>
+      {% for c in categories %}
+      <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+    <select id="model-filter">
+      <option value="">All models</option>
+      {% for m in target_models %}
+      <option value="{{ m }}">{{ m }}</option>
+      {% endfor %}
+    </select>
+    <select id="sort-filter">
+      <option value="popular">Most popular</option>
+      <option value="newest">Newest</option>
+      <option value="rating">Highest rated</option>
+      <option value="price_low">Price: low to high</option>
+      <option value="price_high">Price: high to low</option>
+    </select>
+  </div>
+
+  <div id="results-count" style="color:var(--muted); font-size:0.88rem; margin-bottom:16px;"></div>
+  <div id="prompt-grid" class="grid"></div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>window.__INITIAL_CATEGORY__ = {{ initial_category|tojson }};</script>
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+{% endblock %}

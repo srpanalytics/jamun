@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-kicker">AI Prompt Intelligence Platform</div>
+    <h1>Learn, create, and monetize AI prompts &amp; workflows.</h1>
+    <p class="lead">Discover proven, benchmark-scored prompts from verified experts — or publish your own and get paid every time someone uses it.</p>
+    <div class="hero-ctas">
+      <a href="{{ url_for('marketplace') }}" class="btn btn-primary">Browse the Marketplace</a>
+      <a href="{{ url_for('signup') }}" class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.35);">Become a Creator</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">{{ stats.total_prompts }}</div><div class="label">Prompts &amp; workflows</div></div>
+      <div class="hero-stat"><div class="num">{{ stats.total_creators }}</div><div class="label">Verified creators</div></div>
+      <div class="hero-stat"><div class="num">{{ stats.total_sales }}</div><div class="label">Prompts sold</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="section-kicker">Featured</span>
+        <h2>Popular right now</h2>
+      </div>
+      <a href="{{ url_for('marketplace') }}" class="btn btn-outline btn-sm">View all →</a>
+    </div>
+
+    {% if featured %}
+    <div class="grid">
+      {% for p in featured %}
+      <a href="{{ url_for('prompt_detail', prompt_id=p.id) }}" class="card">
+        <div class="card-tags">
+          <span class="tag">{{ p.category }}</span>
+          <span class="tag tag-model">{{ p.target_model }}</span>
+        </div>
+        <h3>{{ p.title }}</h3>
+        <p class="desc">{{ p.description }}</p>
+        <div class="card-creator">by {{ p.creator_name }}</div>
+        <div class="card-footer">
+          <span class="card-price">${{ "%.2f"|format(p.price) }}</span>
+          <span class="card-meta">
+            {% if p.avg_rating %}<span class="rating">★ {{ p.avg_rating }}</span> ({{ p.review_count }}) ·{% endif %}
+            {{ p.sales_count }} sold
+          </span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">✨</div>
+      <p>No prompts yet — be the first to publish one.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section" style="background:var(--lilac);">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="section-kicker">How it works</span>
+        <h2>From idea to income in four steps</h2>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(230px,1fr));">
+      <div class="card">
+        <div class="card-tags"><span class="tag">01</span></div>
+        <h3>Sign up as a creator</h3>
+        <p class="desc">Build a profile and share your area of prompt expertise.</p>
+      </div>
+      <div class="card">
+        <div class="card-tags"><span class="tag">02</span></div>
+        <h3>Publish a prompt</h3>
+        <p class="desc">Write your workflow, set a price, and publish in minutes.</p>
+      </div>
+      <div class="card">
+        <div class="card-tags"><span class="tag">03</span></div>
+        <h3>Get discovered</h3>
+        <p class="desc">Buyers search, compare, and preview before they purchase.</p>
+      </div>
+      <div class="card">
+        <div class="card-tags"><span class="tag">04</span></div>
+        <h3>Get paid</h3>
+        <p class="desc">Earn every time someone buys — reviews build your reputation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}{{ prompt.title }} — jamun{% endblock %}
+{% block content %}
+
+<div class="container section">
+  <div class="detail-grid">
+    <div class="detail-main">
+      <div class="card-tags">
+        <span class="tag">{{ prompt.category }}</span>
+        <span class="tag tag-model">{{ prompt.target_model }}</span>
+      </div>
+      <h1>{{ prompt.title }}</h1>
+      <div class="detail-meta">
+        {% if prompt.avg_rating %}<span class="rating">★ {{ prompt.avg_rating }}</span> ({{ prompt.review_count }} reviews) ·{% endif %}
+        <span>{{ prompt.sales_count }} sold</span>
+        <span>· by {{ prompt.creator_name }}</span>
+      </div>
+      <p class="detail-desc">{{ prompt.description }}</p>
+
+      <h3 style="margin-bottom:12px;">Prompt content</h3>
+      <div class="content-box" id="content-box">
+        <div id="content-text" class="{% if not (owns or is_owner) %}content-locked{% endif %}">{{ prompt.content if (owns or is_owner) else prompt.preview }}</div>
+        {% if not (owns or is_owner) %}
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div style="font-weight:700; color:var(--navy);">Purchase to unlock the full prompt</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="reviews-section">
+        <h3 style="margin-bottom:16px;">Reviews {% if prompt.review_count %}({{ prompt.review_count }}){% endif %}</h3>
+
+        {% if owns and not user_review %}
+        <div class="card" style="margin-bottom:24px;">
+          <h4 style="margin:0 0 10px;">Leave a review</h4>
+          <div class="star-input" id="star-input">
+            {% for i in range(1,6) %}<span data-value="{{ i }}">★</span>{% endfor %}
+          </div>
+          <input type="hidden" id="rating-value" value="0">
+          <textarea id="review-comment" placeholder="How did this prompt work for you?" style="margin-bottom:10px;"></textarea>
+          <button class="btn btn-primary btn-sm" id="submit-review-btn" data-prompt-id="{{ prompt.id }}">Submit review</button>
+          <div id="review-msg" class="msg-inline"></div>
+        </div>
+        {% endif %}
+
+        {% if reviews %}
+        {% for r in reviews %}
+        <div class="review">
+          <div class="review-head">
+            {{ r.buyer_name }}
+            <span class="review-stars">{{ "★" * r.rating }}{{ "☆" * (5 - r.rating) }}</span>
+            <span class="review-date">{{ r.created_at[:10] }}</span>
+          </div>
+          {% if r.comment %}<p class="review-comment">{{ r.comment }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color:var(--muted); font-size:0.9rem;">No reviews yet — be the first to leave one after purchasing.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="detail-side">
+      <div class="buy-card">
+        <div class="buy-price">${{ "%.2f"|format(prompt.price) }}</div>
+        <div style="color:var(--muted); font-size:0.85rem; margin-bottom:18px;">one-time purchase · lifetime access</div>
+
+        {% if is_owner %}
+          <a href="{{ url_for('edit_prompt', prompt_id=prompt.id) }}" class="btn btn-outline btn-block">Edit this prompt</a>
+        {% elif owns %}
+          <div class="owned-badge">✓ You own this prompt</div>
+        {% elif current_user %}
+          <button class="btn btn-primary btn-block" id="buy-btn" data-prompt-id="{{ prompt.id }}">Buy now</button>
+          <div id="buy-msg" class="msg-inline"></div>
+        {% else %}
+          <a href="{{ url_for('login', next=request.path) }}" class="btn btn-primary btn-block">Log in to purchase</a>
+        {% endif %}
+
+        <div class="creator-line">
+          <div class="avatar">{{ prompt.creator_name[0]|upper }}</div>
+          <div>
+            <div style="font-weight:700; font-size:0.92rem;">{{ prompt.creator_name }}</div>
+            <div style="color:var(--muted); font-size:0.78rem;">Verified creator</div>
+          </div>
+        </div>
+        {% if prompt.creator_bio %}
+        <p style="color:var(--muted); font-size:0.85rem;">{{ prompt.creator_bio }}</p>
+        {% endif %}
+
+        {% if more_from_creator %}
+        <div style="margin-top:18px; padding-top:18px; border-top:1px solid var(--border);">
+          <div style="font-weight:700; font-size:0.85rem; margin-bottom:10px;">More from this creator</div>
+          {% for mp in more_from_creator %}
+          <a href="{{ url_for('prompt_detail', prompt_id=mp.id) }}" style="display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 0; color:var(--ink);">
+            <span>{{ mp.title }}</span><span style="color:var(--muted);">${{ "%.2f"|format(mp.price) }}</span>
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/prompt-detail.js') }}"></script>
+{% endblock %}

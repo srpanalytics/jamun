@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit Prompt{% else %}Publish a Prompt{% endif %} — PromptSphere{% endblock %}
+{% block content %}
+<div class="container form-page">
+  <div class="form-card wide">
+    <h1>{% if editing %}Edit prompt{% else %}Publish a new prompt{% endif %}</h1>
+    <p class="subtitle">{% if editing %}Update your listing below.{% else %}Fill this out and it goes live in the marketplace immediately.{% endif %}</p>
+    <form method="POST">
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" value="{{ form.get('title','') }}" placeholder="e.g. High-Converting Product Description Generator" required>
+      </div>
+      <div class="field">
+        <label for="description">Short description</label>
+        <textarea id="description" name="description" placeholder="One or two sentences buyers will see before purchasing." style="min-height:80px;" required>{{ form.get('description','') }}</textarea>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <option value="">Choose a category</option>
+            {% for c in categories %}
+            <option value="{{ c }}" {% if form.get('category')==c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="target_model">Target model</label>
+          <select id="target_model" name="target_model" required>
+            <option value="">Choose a model</option>
+            {% for m in target_models %}
+            <option value="{{ m }}" {% if form.get('target_model')==m %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="price">Price (USD)</label>
+        <input type="number" id="price" name="price" min="0" step="0.5" value="{{ form.get('price','') }}" placeholder="e.g. 12.00" required>
+      </div>
+      <div class="field">
+        <label for="content">Full prompt content</label>
+        <textarea id="content" name="content" placeholder="Write the full prompt here, including any [PLACEHOLDER] variables the buyer should fill in." style="min-height:220px;" required>{{ form.get('content','') }}</textarea>
+        <div class="hint">This is only revealed to buyers after they purchase — a short preview is generated automatically.</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">{% if editing %}Save changes{% else %}Publish prompt{% endif %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

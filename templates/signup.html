@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Sign up — jamun{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card">
+    <h1>Create your account</h1>
+    <p class="subtitle">Join as a buyer to discover prompts, or a creator to start selling.</p>
+    <form method="POST" action="{{ url_for('signup') }}" id="signup-form">
+      <div class="field">
+        <label>I want to join as</label>
+        <div class="role-toggle">
+          <label class="role-option selected" id="role-buyer-label">
+            <input type="radio" name="role" value="buyer" checked>
+            A buyer
+          </label>
+          <label class="role-option" id="role-creator-label">
+            <input type="radio" name="role" value="creator">
+            A creator
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" value="{{ form.get('name','') }}" required autofocus>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ form.get('email','') }}" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6">
+        <div class="hint">At least 6 characters.</div>
+      </div>
+      <div class="field">
+        <label for="bio">Short bio <span style="font-weight:400; color:var(--muted);">(optional)</span></label>
+        <textarea id="bio" name="bio" placeholder="What are you an expert in?" style="min-height:70px;">{{ form.get('bio','') }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+    </form>
+    <p class="form-footer-link">Already have an account? <a href="{{ url_for('login') }}" style="color:var(--coral-dark); font-weight:600;">Log in</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.querySelectorAll('.role-option').forEach(function(opt){
+  opt.addEventListener('click', function(){
+    document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    opt.querySelector('input').checked = true;
+  });
+});
+</script>
+{% endblock %}

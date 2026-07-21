@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Page not found — jamun{% endblock %}
+{% block content %}
+<div class="container section center" style="padding:100px 24px;">
+  <div style="font-size:3rem; margin-bottom:10px;">🔎</div>
+  <h1>Page not found</h1>
+  <p style="color:var(--muted); margin-bottom:24px;">The page or prompt you're looking for doesn't exist or may have been removed.</p>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">Back to home</a>
+</div>
+{% endblock %}

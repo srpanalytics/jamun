@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — jamun{% endblock %}
+{% block content %}
+
+<div class="container page-title-block">
+  <h1>Welcome back, {{ current_user.name.split(' ')[0] }}</h1>
+  <p>Manage your published prompts, track earnings, and see what you've bought.</p>
+</div>
+
+<div class="container section" style="padding-top:12px;">
+
+  {% if current_user.role == 'creator' %}
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="num">${{ "%.2f"|format(total_earnings) }}</div>
+      <div class="label">Total earnings</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ total_sales }}</div>
+      <div class="label">Prompts sold</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">{{ prompts|length }}</div>
+      <div class="label">Published prompts</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="tab-nav">
+    {% if current_user.role == 'creator' %}
+    <button class="tab-btn active" data-tab="mine">My Prompts</button>
+    {% endif %}
+    <button class="tab-btn {% if current_user.role != 'creator' %}active{% endif %}" data-tab="purchases">My Purchases</button>
+  </div>
+
+  {% if current_user.role == 'creator' %}
+  <div class="tab-panel active" id="tab-mine">
+    {% if prompts %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Category</th><th>Price</th><th>Sales</th><th>Revenue</th><th>Rating</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for p in prompts %}
+          <tr>
+            <td><a href="{{ url_for('prompt_detail', prompt_id=p.id) }}" style="font-weight:600;">{{ p.title }}</a></td>
+            <td>{{ p.category }}</td>
+            <td>${{ "%.2f"|format(p.price) }}</td>
+            <td>{{ p.total_sales }}</td>
+            <td>${{ "%.2f"|format(p.total_revenue) }}</td>
+            <td>{% if p.avg_rating %}★ {{ p.avg_rating }}{% else %}—{% endif %}</td>
+            <td>
+              <div class="row-actions">
+                <a href="{{ url_for('edit_prompt', prompt_id=p.id) }}" class="btn btn-outline btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('delete_prompt', prompt_id=p.id) }}" onsubmit="return confirm('Delete this prompt permanently?');">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📝</div>
+      <p>You haven't published any prompts yet.</p>
+      <a href="{{ url_for('create_prompt') }}" class="btn btn-primary">Publish your first prompt</a>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="tab-panel {% if current_user.role != 'creator' %}active{% endif %}" id="tab-purchases">
+    {% if my_purchases %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prompt</th><th>Creator</th><th>Price paid</th><th>Purchased</th></tr></thead>
+        <tbody>
+          {% for pu in my_purchases %}
+          <tr>
+            <td><a href="{{ url_for('prompt_detail', prompt_id=pu.id) }}" style="font-weight:600;">{{ pu.title }}</a></td>
+            <td>{{ pu.creator_name }}</td>
+            <td>${{ "%.2f"|format(pu.price) }}</td>
+            <td>{{ pu.purchased_at[:10] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🛒</div>
+      <p>You haven't purchased any prompts yet.</p>
+      <a href="{{ url_for('marketplace') }}" class="btn btn-primary">Browse the marketplace</a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+{% endblock %}
